@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  api:
+    container_name: api_crud_entrega
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      - DB_HOST=db
+      - DB_USER=kennedy
+      - DB_PASSWORD=1234
+      - DB=users_database
+      - SECRET_KEY=4677a9b26c5183a563cabf35426cb82a
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+
+  db:
+    container_name: db_entrega
+    image: postgres:14.4-alpine
+    ports:
+      - 5431:5432
+    environment:
+      - POSTGRES_USER=kennedy
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=users_database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kennedy -d users_database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - project_entrega:/var/lib/postgresql/data
+volumes:
+  postgres_entrega:
+    driver: local
